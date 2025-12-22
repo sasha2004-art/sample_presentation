@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Оценки параметров | Арматура Style</title>
+    
+    <!-- Подключение графиков -->
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    
+    <!-- Подключение шрифтов -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Подключение MathJax для формул -->
+    <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      },
+      svg: {
+        fontCache: 'global'
+      }
+    };
+    </script>
+    <script type="text/javascript" id="MathJax-script" async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+    </script>
+    
+    <style>
+    /* ================= ВАШ ОРИГИНАЛЬНЫЙ СТИЛЬ ================= */
+    :root {
+        --base-green: #34d399; /* emerald-400 */
+        --dark-green: #059669; /* emerald-600 */
+        --text-primary: #1f2937; /* gray-800 */
+        --text-secondary: #4b5563; /* gray-600 */
+        --background: #ffffff;
+        --card-bg: #f9fafb;
+        --font-family: 'Inter', sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; outline: none; -webkit-tap-highlight-color: transparent; }
+
+    body {
+        background-color: var(--background);
+        color: var(--text-primary);
+        font-family: var(--font-family);
+        overflow: hidden;
+        height: 100vh;
+        width: 100vw;
+    }
+    mjx-container {
+    font-size: 1.7em !important;  /* 1.2 = 120%, можно ставить 1.3 или 1.5 */
+    }
+
+    /* Если формулы внутри текста (inline) сбивают строку, можно поправить так: */
+    mjx-container[jax="CHTML"][display="true"] {
+        font-size: 1.5em !important; /* Отдельные выносные формулы еще больше */
+    }
+
+    /* ================= LAYOUT ================= */
+    .slide {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 40px 60px;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.6s ease-in-out, visibility 0.6s;
+        background-color: var(--background);
+        z-index: 1;
+    }
+
+    .slide.active { opacity: 1; visibility: visible; z-index: 10; }
+
+    .slide-content {
+        max-width: 1100px;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+    }
+
+    /* Контент выше мемов */
+    h1, h2, h3, p, li, .card, .tag, .grid-2, .grid-3 { position: relative; z-index: 10; }
+
+    /* ================= TYPOGRAPHY ================= */
+    h1 { font-size: clamp(2rem, 5vw, 4.5rem); font-weight: 700; margin: 0 0 20px 0; line-height: 1.1; letter-spacing: -0.02em; color: var(--text-primary); }
+    h2 { font-size: clamp(1.5rem, 4vw, 3rem); font-weight: 600; margin: 0 0 40px 0; line-height: 1.2; letter-spacing: -0.01em; color: var(--text-primary); }
+    h3 { font-size: clamp(1.2rem, 2.5vw, 1.8rem); font-weight: 600; margin: 10px 0; color: var(--text-primary); }
+    p, li { font-size: clamp(1rem, 1.2vw, 1.25rem); line-height: 1.6; color: var(--text-secondary); }
+
+    .green-text { color: var(--dark-green); }
+    
+    /* ================= UI ELEMENTS ================= */
+    .tag {
+        display: inline-block; padding: 6px 14px;
+        background: #ecfdf5; color: var(--dark-green);
+        font-size: 0.85rem; font-weight: 600;
+        border-radius: 20px; margin: 5px;
+        text-transform: uppercase; letter-spacing: 0.05em;
+    }
+
+    .card {
+        background: var(--card-bg);
+        border-radius: 1rem;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        border: 1px solid #e5e7eb;
+        text-align: left;
+        height: 100%;
+        display: flex; flex-direction: column; justify-content: flex-start;
+        transition: transform 0.3s;
+    }
+    .card:hover { transform: translateY(-5px); }
+
+    /* === MINI MEME STYLE === */
+    .mini-meme {
+        position: absolute; width: 300px; height: auto;
+        border-radius: 12px; box-shadow: 6px 6px 0px rgba(0,0,0,1);
+        z-index: 1; transform: rotate(5deg); transition: transform 0.3s;
+    }
+    .mini-meme:hover { transform: scale(1.1) rotate(0deg); z-index: 100; }
+    
+    .meme-tr { top: -100px; right: -160px; }
+    .meme-tl { top: -100px; left: -160px; }
+    .meme-br { bottom: -60px; right: -160px; }
+    .meme-bl { bottom: -60px; left: -160px; }
+
+    /* === SWAG PHOTOS STYLE === */
+    .swag-img {
+        width: 100%; height: 280px;
+        object-fit: cover; object-position: top center;
+        border-radius: 12px; border: 3px solid #1f2937;
+        box-shadow: 5px 5px 0px rgba(0,0,0,0.8);
+        margin-bottom: 20px; transition: transform 0.3s;
+        background-color: #eee; position: relative; z-index: 20;
+    }
+    .swag-img:hover { transform: scale(1.05) rotate(0deg) !important; z-index: 30; }
+
+    /* === FINAL BG IMAGE === */
+    .final-slide-bg {
+        position: absolute; top: 0; left: 0;
+        width: 100%; height: 100%;
+        background-image: url('assets/images/photo_2025-12-23_00-33-43-removebg-preview.png');
+        background-size: cover; background-position: center;
+        opacity: 0.15; z-index: 0; pointer-events: none;
+    }
+
+    .rot-left { transform: rotate(-2deg); }
+    .rot-right { transform: rotate(2deg); }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; width: 100%; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; width: 100%; }
+    
+    ul { list-style: none; padding: 0; text-align: left; margin-top: 15px;}
+    ul li { 
+        margin-bottom: 15px; 
+        display: flex; 
+        align-items: flex-start; 
+    }
+    
+    /* Добавьте вот это правило для нового спана */
+    ul li span {
+        flex: 1; /* Заставляет текст занимать всё пространство справа от галочки */
+        text-align: left;
+    }
+
+    /* ================= ANIMATIONS ================= */
+    .fade-in-up { opacity: 0; transform: translateY(30px); }
+    .fade-in-up.is-animating { animation: fadeInUp 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.2s; }
+    .delay-3 { animation-delay: 0.3s; }
+    @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+
+    /* ================= NAVIGATION ================= */
+    .nav-arrow {
+        position: fixed; top: 50%; transform: translateY(-50%);
+        width: 60px; height: 60px; z-index: 50; cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+        opacity: 0; transition: opacity 0.3s; color: var(--text-primary);
+        background: rgba(0,0,0,0.05); border-radius: 50%;
+    }
+    body:hover .nav-arrow { opacity: 0.5; }
+    .nav-arrow:hover { opacity: 1 !important; background: rgba(0,0,0,0.1); }
+    #nav-prev { left: 20px; } #nav-next { right: 20px; }
+
+    .footer-info {
+        position: fixed; bottom: 20px; left: 30px;
+        font-size: 0.9rem; font-weight: 600; color: #9ca3af;
+        z-index: 50; width: calc(100% - 60px);
+        display: flex; justify-content: space-between; align-items: center;
+    }
+    
+    .chart-container { width: 100%; height: 350px; }
+
+    @media (max-width: 768px) {
+        h1 { font-size: 2.5rem; } h2 { font-size: 1.8rem; }
+        .grid-2, .grid-3 { grid-template-columns: 1fr; }
+        .slide { padding: 20px; }
+        .mini-meme { width: 100px; display: none; }
+    }
+</style>
+</head>
+<body>
+
+    <!-- Навигация -->
+    <div id="nav-prev" class="nav-arrow" onclick="prevSlide()">❮</div>
+    <div id="nav-next" class="nav-arrow" onclick="nextSlide()">❯</div>
+
+    <!-- Футер -->
+    <div class="footer-info">
+        <span>МАТЕМАТИКА / СТАТИСТИКА</span>
+        <div><span id="currSlide">1</span> / <span id="totalSlide">13</span></div>
+    </div>
+
+    <!-- === СЛАЙДЫ === -->
+
+    <!-- 1. ТИТУЛЬНИК -->
+    <div class="slide active">
+        <div class="slide-content">
+            <img src="assets/images/школьник_в_шоке.jpg" class="mini-meme meme-tr" alt="meme">
+            
+            <div class="fade-in-up" style="margin-bottom: 20px;">
+                <span class="tag">#Статистика</span>
+                <span class="tag">#Оценки</span>
+            </div>
+            <h1 class="fade-in-up delay-1">Оценки параметров<br>генеральной совокупности</h1>
+            <div class="fade-in-up delay-2" style="margin-top: 30px; text-align: center;">
+                <p style="font-weight: bold; color: var(--text-primary); margin-bottom: 5px;">Выполнили:</p>
+                <p style="margin: 0;">Ардамина Арина</p>
+                <p style="margin: 0;">Белов Лев</p>
+                <p style="margin: 0;">Колеров Роман</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. ПРОБЛЕМА (СУП И НАСЕЛЕНИЕ) -->
+    <div class="slide">
+        <div class="slide-content">
+            <img src="assets/images/байден_смотрит.jpg" class="mini-meme meme-tl" alt="meme">
+
+            <h2 class="fade-in-up">В чем проблема?</h2>
+            <div class="card fade-in-up delay-1" style="max-width: 900px; text-align: center;">
+                <p>Представьте, что вы хотите узнать, соленый ли суп в огромной кастрюле.</p>
+                <h3 class="green-text" style="margin: 20px 0;">Проблема:</h3>
+                <p>Вы не будете есть <strong>всю кастрюлю</strong> (Генеральную совокупность). Это невозможно.</p>
+                <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;">
+                <h3 class="green-text">Решение:</h3>
+                <p>Вы берете <strong>одну ложку</strong> (Выборку). Если ложка соленая, вы делаете вывод обо всем супе. Но всегда есть риск, что соль не размешалась.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. ГЕНЕРАЛЬНАЯ vs ВЫБОРОЧНАЯ (ОБОЗНАЧЕНИЯ) -->
+    <div class="slide">
+        <div class="slide-content">
+            <img src="assets/images/волк_сидит.jpg" class="mini-meme meme-tr" alt="meme">
+
+            <h2 class="fade-in-up">Параметры vs Статистики</h2>
+            <p class="fade-in-up delay-1" style="margin-bottom: 20px;">Важно не путать буквы! (Из видео)</p>
+            
+            <div class="grid-2 fade-in-up delay-1" style="max-width: 1000px;">
+                <div class="card" style="border-left: 5px solid var(--text-primary);">
+                    <h3>Ген. Совокупность</h3>
+                    <p style="font-size: 0.9rem;">Все объекты (8 млрд людей, 50к грибов).</p>
+                    <ul style="font-family: 'Times New Roman', serif; font-size: 1.3rem; margin-top: 20px;">
+                        <li>$N$ — объем</li>
+                        <li>$\mu$ — Среднее (Мю)</li>
+                        <li>$\sigma$ — Станд. отклонение</li>
+                    </ul>
+                    <span class="tag" style="background: #eee; color: #555;">Это ПАРАМЕТРЫ</span>
+                </div>
+                <div class="card" style="background: #f0fdf4; border-color: var(--base-green); border-left: 5px solid var(--dark-green);">
+                    <h3 class="green-text">Выборка</h3>
+                    <p style="font-size: 0.9rem;">Часть, которую мы измерили (ложка супа).</p>
+                    <ul style="font-family: 'Times New Roman', serif; font-size: 1.3rem; margin-top: 20px;">
+                        <li>$n$ — объем</li>
+                        <li>$\bar{x}$ — Среднее (X bar)</li>
+                        <li>$s$ — Станд. отклонение</li>
+                    </ul>
+                    <span class="tag">Это СТАТИСТИКИ</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. ТОЧЕЧНАЯ ОЦЕНКА -->
+    <div class="slide">
+        <div class="slide-content">
+            <img src="assets/images/райн_гослинг_кричит.jpg" class="mini-meme meme-br" alt="meme">
+
+            <h2 class="fade-in-up">Точечная оценка</h2>
+            <div class="grid-2 fade-in-up delay-1">
+                <div class="card">
+                    <h3>Определение</h3>
+                    <p>Мы берем число из выборки ($\bar{x}$) и говорим, что оно равно числу в генеральной совокупности ($\mu$).</p>
+                </div>
+                <div class="card">
+                    <h3 class="green-text">Суть</h3>
+                    <div style="margin-top: 15px; background: #ecfdf5; padding: 20px; border-radius: 8px; text-align: center; font-size: 1.5rem; font-weight: bold;">
+                        $\bar{x} \approx \mu$
+                    </div>
+                    <p style="font-size: 0.9rem; margin-top: 10px;">Пример: "Средний рост в выборке 175 см, значит и у всех людей 175 см".</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. ОГРАНИЧЕНИЯ (ВАРИАТИВНОСТЬ) -->
+    <div class="slide">
+        <div class="slide-content">
+            <img src="assets/images/грусний_райн_гослинг.jpg" class="mini-meme meme-tl" alt="meme">
+
+            <h2 class="fade-in-up">Почему это плохо?</h2>
+            <div class="card fade-in-up delay-1" style="max-width: 800px;">
+                <h3>Вариативность выборки</h3>
+                <p>Если зачерпнуть суп второй раз, в ложке может быть больше картошки и меньше соли.</p>
+                <ul>
+                    <li>Выборка 1: Среднее = 40</li>
+                    <li>Выборка 2: Среднее = 38</li>
+                </ul>
+                <p style="margin-top: 20px; font-weight: bold; text-align: center; color: #ef4444;">
+                    Точечная оценка почти никогда не совпадает с истиной ($\bar{x} \neq \mu$).
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 6. ДОВЕРИТЕЛЬНЫЙ ИНТЕРВАЛ -->
+    <div class="slide">
+        <div class="slide-content">
+            <img src="assets/images/мыца_ванять.jpg" class="mini-meme meme-tr" alt="meme">
+
+            <h2 class="fade-in-up">Доверительный интервал (ДИ)</h2>
+            <div class="card fade-in-up delay-1" style="width: 100%; max-width: 800px; text-align: center; margin-bottom: 30px; padding: 30px;">
+                <p style="font-size: 1.2rem;">
+                    Это диапазон, который накрывает неизвестный параметр $\mu$ с заданной вероятностью (обычно 95%).
+                </p>
+            </div>
+            
+            <div class="grid-2 fade-in-up delay-2">
+                <div class="card" style="background: #f9fafb;">
+                    <h3>Формула</h3>
+                    <div style="font-family: 'Times New Roman'; font-size: 1.4rem; text-align: center; padding: 10px;">
+                        $\bar{x} \pm t \cdot \frac{s}{\sqrt{n}}$
+                    </div>
+                </div>
+                <div class="card" style="border-left: 5px solid var(--dark-green);">
+                    <h3 class="green-text">Компоненты</h3>
+                    <ul style="font-size: 0.9rem;">
+                        <li>$\frac{s}{\sqrt{n}}$ — Стандартная ошибка ($SE$)</li>
+                        <li>$t$ — Коэффициент доверия (Стьюдента)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 7. ПАРАМЕТРЫ ДИ -->
+    <div class="slide">
+        <div class="slide-content">
+            <img src="assets/images/волк_орет.jpg" class="mini-meme meme-bl" alt="meme">
+
+            <h2 class="fade-in-up">От чего зависит точность?</h2>
+            <div class="grid-3 fade-in-up delay-1">
+                <div class="card">
+                    <h3 class="green-text">Разброс ($s$)</h3>
+                    <p>Чем больше разброс данных (дисперсия), тем шире интервал (менее точно).</p>
+                </div>
+                <div class="card">
+                    <h3 class="green-text">Объем ($n$)</h3>
+                    <p>Стоит в знаменателе! Чем больше ложка (больше $n$), тем меньше ошибка.</p>
+                </div>
+                <div class="card">
+                    <h3 class="green-text">Доверие ($t$)</h3>
+                    <p>95% $\to t \approx 2$<br>99% $\to t \approx 3$<br>68% $\to t \approx 1$</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 8. МЕТОДЫ ОЦЕНКИ -->
+    <div class="slide">
+        <div class="slide-content">
+            <img src="assets/images/хайп_миньёон.jpg" class="mini-meme meme-tr" alt="meme">
+
+            <h2 class="fade-in-up">Методы оценки</h2>
+            <div class="grid-2 fade-in-up delay-1">
+                <div class="card">
+                    <h3>Метод макс. правдоподобия</h3>
+                    <p>Ищет параметры, при которых вероятность получить наши данные максимальна. (Для точечных оценок).</p>
+                </div>
+                <div class="card">
+                    <h3>Метод моментов</h3>
+                    <p>Приравниваем моменты выборки к моментам распределения.</p>
+                </div>
+            </div>
+            <div class="card fade-in-up delay-2" style="margin-top: 20px; width: 100%; text-align: center; border-color: var(--dark-green);">
+                <h3 class="green-text">Интервальное оценивание</h3>
+                <p>То, что мы делаем сейчас — строим границы погрешности.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 9. ГРАФИК -->
+    <div class="slide" id="chartSlide">
+        <div class="slide-content">
+            <img src="assets/images/Кобяков недовольный.jpg" class="mini-meme meme-tl" alt="meme">
+
+            <h2 class="fade-in-up">Геометрический смысл (95%)</h2>
+            <div class="grid-2 fade-in-up delay-1" style="grid-template-columns: 1fr 1.5fr; align-items: center;">
+                <div class="card">
+                    <h3 class="green-text">Правило 2 сигм</h3>
+                    <p>Для 95% доверительного интервала мы отступаем от среднего примерно на 2 стандартные ошибки.</p>
+                    <div style="background: #f3f4f6; padding: 15px; border-radius: 8px; margin-top: 15px; font-family: 'Times New Roman'; font-size: 1.2rem;">
+                        $t \approx 1.96 \approx 2$
+                    </div>
+                </div>
+                <div class="card" style="padding: 10px; height: 400px; display: flex; align-items: center; justify-content: center;">
+                    <div id="chart-area" class="chart-container"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 10. СПОР ФЕРМЕРОВ (ОБНОВЛЕНО ПОД СЦЕНАРИЙ) -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2 class="fade-in-up">Спор фермеров и 50 000 грибов</h2>
+            
+            <div class="fade-in-up delay-1" style="margin-bottom: 25px; text-align: center;">
+                <span class="tag" style="background: #fee2e2; color: #991b1b;">Ген. совокупность: N = 50 000</span>
+                <p style="margin-top: 15px; font-size: 1.2rem;">
+                    В лесу растет <strong>50 000</strong> мухоморов. Арсений и Иван спорят о среднем числе пятен.
+                </p>
+            </div>
+
+            <div class="grid-2 fade-in-up delay-2">
+                <!-- АРСЕНИЙ -->
+                <div class="card" style="background: #f0fdf4; border-color: var(--base-green); align-items: center; text-align: center;">
+                    <img src="assets/images/10007.jpg" class="swag-img rot-left" alt="Arseniy">
+                    
+                    <h3 class="green-text">Арсений (Умный)</h3>
+                    <p style="font-size: 0.95rem; margin-bottom: 10px;">"Я сделал <strong>две выборки</strong> по 50 штук, чтобы проверить вариативность."</p>
+                    
+                    <div style="background: white; padding: 10px; border-radius: 8px; width: 100%; border: 1px dashed var(--base-green); text-align: left; margin-bottom: 10px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                            <span>Выборка 1:</span>
+                            <span style="font-weight: bold;">$\bar{x}_1 = 6.9$</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>Выборка 2:</span>
+                            <span style="font-weight: bold;">$\bar{x}_2 = 7.6$</span>
+                        </div>
+                    </div>
+                    
+                    <p style="font-weight: bold; font-size: 0.9rem; color: var(--dark-green);">
+                        "Средние скачут! Мой ответ — интервал: 6.5 — 8.0"
+                    </p>
+                </div>
+
+                <!-- ИВАН -->
+                <div class="card" style="background: #fff0f0; border-color: #fecaca; align-items: center; text-align: center;">
+                    <img src="assets/images/Кобяков недовольный.jpg" class="swag-img rot-right" alt="Ivan">
+
+                    <h3 style="color: #ef4444;">Иван (Интуиция)</h3>
+                    <p style="margin-bottom: 20px;">"Зачем тратить время? Я сорвал один красивый гриб. На нем 7 пятен."</p>
+                    <p>"Значит, у всех 50 000 грибов в среднем 7 пятен!"</p>
+                    
+                    <div style="margin-top: auto; font-weight: bold; font-size: 1.2rem; color: #ef4444;">
+                        Точечная оценка: 7.0
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 11. РАЗВЯЗКА -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2 class="fade-in-up">Кто победил?</h2>
+            <p class="fade-in-up delay-1" style="margin-bottom: 30px;">
+                Они наняли студентов, собрали все 50 000 грибов.<br>
+                Истинное среднее ($\mu$) оказалось равным <strong style="font-size: 1.5rem; color: var(--text-primary);">7.3</strong>.
+            </p>
+            
+            <div class="grid-2 fade-in-up delay-2">
+                <!-- ПОБЕДИТЕЛЬ -->
+                <div class="card" style="border: 2px solid var(--dark-green);">
+                    <div style="height: 220px; overflow: hidden; border-radius: 12px; margin-bottom: 15px; border: 3px solid var(--dark-green); padding: 4px; background: white;">
+                         <img src="assets/images/tyler_derdan.jpg" style="width: 100%; height: 100%; object-fit: cover; object-position: center;" alt="Win">
+                    </div>
+
+                    <h3 class="green-text">Арсений (6.5 — 8.0)</h3>
+                    <p><strong>Выиграл!</strong></p>
+                    <p style="font-size: 0.95rem; margin-top: 10px;">
+                        Его выборки (6.9 и 7.6) отличались, но он учел ошибку репрезентативности ($SE$). Истинное <strong>7.3</strong> попало в его интервал.
+                    </p>
+                </div>
+
+                <!-- ПРОИГРАВШИЙ -->
+                <div class="card" style="opacity: 0.9; border-color: #ef4444;">
+                    <div style="height: 220px; overflow: hidden; border-radius: 12px; margin-bottom: 15px; border: 3px solid #ef4444; padding: 4px; background: white;">
+                        <img src="assets/images/ivan_zolo.jpg" style="width: 100%; height: 100%; object-fit: cover; object-position: center 40%;" alt="Sad">
+                    </div>
+
+                    <h3>Иван (7.0)</h3>
+                    <p><strong>Проиграл.</strong></p>
+                    <p style="font-size: 0.95rem; margin-top: 10px;">
+                        Ошибка 0.3. В масштабах 50 000 грибов это огромная неточность. Точечная оценка без интервала — это гадание.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 12. ИТОГ -->
+    <div class="slide">
+        <div class="final-slide-bg"></div>
+        <div class="slide-content">
+            <div class="fade-in-up">
+                 <div style="font-size: 3rem; color: var(--dark-green); font-weight: bold;">∑</div>
+            </div>
+            <h1 class="fade-in-up delay-1" style="margin-top: 20px;">Итог</h1>
+            <div class="card fade-in-up delay-2" style="max-width: 800px; margin-top: 20px; background: rgba(255,255,255,0.95); z-index: 10;">
+                <ul style="font-size: 1.2rem;">
+                    <!-- Оборачиваем текст в <span>, чтобы он не разваливался -->
+                    <li>
+                        <span>
+                            <strong>Точечная оценка ($\bar{x}$)</strong> — это случайная величина, она меняется от выборки к выборке.
+                        </span>
+                    </li>
+                    <li>
+                        <span>
+                            <strong>Доверительный интервал</strong> — учитывает стандартную ошибку ($SE$) и дает гарантию (95%).
+                        </span>
+                    </li>
+                    <li>
+                        <span>
+                            Не будьте как Иван — считайте погрешности!
+                        </span>
+                    </li>
+                </ul>
+            </div>
+            <div class="fade-in-up delay-3" style="margin-top: 40px; color: var(--text-secondary); font-size: 1.5rem; font-weight: bold; position: relative; z-index: 10;">
+                Спасибо за внимание!
+            </div>
+        </div>
+    </div>
+
+    <!-- 13. ССЫЛКИ -->
+    <div class="slide">
+        <div class="slide-content">
+            <h2 class="fade-in-up">База знаний</h2>
+            <img src="assets/images/волк_сидит.jpg" class="fade-in-up delay-1" style="width: 150px; border-radius: 12px; margin-bottom: 20px; box-shadow: 4px 4px 0 #1f2937;" alt="Wolf">
+
+            <div class="grid-2 fade-in-up delay-2" style="max-width: 900px;">
+                <a href="https://ru.wikipedia.org/wiki/Генеральная_совокупность" target="_blank" class="card" style="text-decoration: none; color: inherit; transition: 0.2s; cursor: pointer;">
+                    <h3 style="color: #2563eb;">Ген. совокупность ↗</h3>
+                    <p>Параметры ($\mu, \sigma$)</p>
+                </a>
+                <a href="https://ru.wikipedia.org/wiki/Выборка" target="_blank" class="card" style="text-decoration: none; color: inherit; transition: 0.2s; cursor: pointer;">
+                    <h3 style="color: #2563eb;">Выборка ↗</h3>
+                    <p>Статистики ($\bar{x}, s$)</p>
+                </a>
+                <a href="https://ru.wikipedia.org/wiki/Стандартная_ошибка" target="_blank" class="card" style="text-decoration: none; color: inherit; transition: 0.2s; cursor: pointer;">
+                    <h3 style="color: #2563eb;">Стандартная ошибка ↗</h3>
+                    <p>$SE = s / \sqrt{n}$</p>
+                </a>
+                <a href="https://ru.wikipedia.org/wiki/Доверительный_интервал" target="_blank" class="card" style="text-decoration: none; color: inherit; transition: 0.2s; cursor: pointer;">
+                    <h3 style="color: #2563eb;">Доверительный интервал ↗</h3>
+                    <p>Диапазон $\pm 2SE$</p>
+                </a>
+            </div>
+            
+            <div class="fade-in-up delay-3" style="position: absolute; bottom: 20px; right: 20px;">
+                <img src="assets/images/хайп_миньёон.jpg" style="width: 120px; border-radius: 50%; border: 3px solid #000; box-shadow: 3px 3px 0 rgba(0,0,0,0.5);" alt="Hype">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // === CHART LOGIC ===
+        function generateNormalDistribution(mean, stdDev, points) {
+            let data = [];
+            let minX = mean - 4 * stdDev;
+            let maxX = mean + 4 * stdDev;
+            let step = (maxX - minX) / points;
+            for (let x = minX; x <= maxX; x += step) {
+                let y = (1 / (stdDev * Math.sqrt(2 * Math.PI))) * Math.exp(-0.5 * Math.pow((x - mean) / stdDev, 2));
+                data.push({x: parseFloat(x.toFixed(2)), y: y});
+            }
+            return data;
+        }
+
+        const normalData = generateNormalDistribution(0, 1, 100);
+
+        const areaOptions = {
+            chart: { type: 'area', height: 350, fontFamily: 'Inter, sans-serif', toolbar: { show: false }, animations: { enabled: true, easing: 'easeinout', speed: 800 } },
+            dataLabels: { enabled: false },
+            series: [{ name: 'Плотность', data: normalData }],
+            colors: ['#059669'],
+            fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.6, opacityTo: 0.1, stops: [0, 90, 100] } },
+            xaxis: {
+                type: 'numeric', tickAmount: 5,
+                labels: { style: { colors: '#6b7280' }, formatter: (val) => val.toFixed(1) },
+                title: { text: 't-критерий (сигмы)', style: { color: '#6b7280' } }
+            },
+            yaxis: { show: false },
+            grid: { borderColor: '#e5e7eb', strokeDashArray: 4 },
+            tooltip: { x: { formatter: (val) => 't = ' + val.toFixed(2) } },
+            annotations: {
+                xaxis: [{
+                    x: -1.96, x2: 1.96,
+                    fillColor: '#34d399', opacity: 0.1,
+                    label: {
+                        borderColor: '#059669',
+                        style: { color: '#fff', background: '#059669' },
+                        text: '95% Доверия (±2 SE)'
+                    }
+                }]
+            }
+        };
+
+        let ch1;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            ch1 = new ApexCharts(document.querySelector("#chart-area"), areaOptions);
+            ch1.render();
+            showSlide(0);
+        });
+
+        // === SLIDER LOGIC ===
+        let current = 0;
+        const slides = document.querySelectorAll('.slide');
+        const countEl = document.getElementById('currSlide');
+        const totalEl = document.getElementById('totalSlide');
+        
+        totalEl.innerText = slides.length;
+
+        function showSlide(idx) {
+            slides.forEach((s, i) => {
+                s.classList.remove('active');
+                if(i === idx) {
+                    s.classList.add('active');
+                    const animated = s.querySelectorAll('.fade-in-up');
+                    animated.forEach(el => {
+                        el.classList.remove('is-animating');
+                        void el.offsetWidth; 
+                        el.classList.add('is-animating');
+                    });
+                    if(s.id === 'chartSlide' && ch1) ch1.updateOptions({ chart: { animations: { enabled: true } } });
+                }
+            });
+            countEl.innerText = idx + 1;
+        }
+
+        function nextSlide() { current = (current + 1) % slides.length; showSlide(current); }
+        function prevSlide() { current = (current - 1 + slides.length) % slides.length; showSlide(current); }
+        
+        document.addEventListener('keydown', (e) => {
+            if(e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') nextSlide();
+            if(e.key === 'ArrowLeft') prevSlide();
+        });
+    </script>
+</body>
+</html>
