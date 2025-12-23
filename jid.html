@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Эволюция далека: биотехнологический симбиоз</title>
+    <style>
+        :root {
+            --dark-bg: #0a0a12;
+            --darker-bg: #050509;
+            --accent-color: #8a2be2;
+            --accent-light: #a855f7;
+            --text-color: #f0f0f0;
+            --text-secondary: #b0b0c0;
+            --section-bg: #141420;
+            --border-color: #2a2a3a;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-color);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            background-color: var(--darker-bg);
+            padding: 2rem 0;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        h1 {
+            color: var(--accent-color);
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+        }
+        
+        nav {
+            margin-top: 1.5rem;
+        }
+        
+        .nav-list {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .nav-list a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: all 0.3s;
+            border: 1px solid transparent;
+        }
+        
+        .nav-list a:hover {
+            color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+        
+        .nav-list a.active {
+            background-color: var(--accent-color);
+            color: var(--dark-bg);
+        }
+        
+        .slides-container {
+            position: relative;
+            padding: 3rem 0;
+        }
+        
+        .slide {
+            background-color: var(--section-bg);
+            border-radius: 10px;
+            padding: 2.5rem;
+            margin-bottom: 2.5rem;
+            border-left: 5px solid var(--accent-color);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s, transform 0.8s;
+        }
+        
+        .slide.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        h2 {
+            color: var(--accent-light);
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+        
+        h3 {
+            color: var(--accent-light);
+            margin: 1.2rem 0 0.8rem;
+        }
+        
+        p {
+            margin-bottom: 1rem;
+        }
+        
+        ul {
+            padding-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .highlight {
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+        
+        .evolution-stage {
+            display: flex;
+            align-items: center;
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background-color: rgba(138, 43, 226, 0.1);
+            border-radius: 8px;
+            border-left: 4px solid var(--accent-color);
+        }
+        
+        .stage-number {
+font-size: 3rem;
+            font-weight: bold;
+            color: var(--accent-color);
+            margin-right: 1.5rem;
+            min-width: 60px;
+        }
+        
+        .environment-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        
+        .environment-item {
+            background-color: rgba(20, 20, 32, 0.7);
+            padding: 1.2rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .adaptation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .adaptation-card {
+            background-color: rgba(20, 20, 32, 0.7);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-top: 3px solid var(--accent-color);
+        }
+        
+        .conclusion {
+            background-color: rgba(138, 43, 226, 0.15);
+            padding: 2rem;
+            border-radius: 10px;
+            margin-top: 2rem;
+            border: 1px solid var(--accent-color);
+        }
+        
+        .conclusion h2 {
+            border-bottom: none;
+            text-align: center;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 2rem 0;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--border-color);
+            margin-top: 3rem;
+        }
+        
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+        }
+        
+        .nav-btn {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+        
+        .nav-btn:hover {
+            background-color: var(--accent-light);
+        }
+        
+        .nav-btn:disabled {
+            background-color: #555;
+            cursor: not-allowed;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .nav-list {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .slide {
+                padding: 1.5rem;
+            }
+            
+            .environment-list, .adaptation-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .evolution-stage {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .stage-number {
+                margin-right: 0;
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Эволюция далека</h1>
+            <p class="subtitle">От головоногого моллюска до биотехнологического организма</p>
+            
+            <nav>
+                <ul class="nav-list">
+                    <li><a href="#slide1" class="nav-link active">1. Исходная форма</a></li>
+                    <li><a href="#slide2" class="nav-link">2. Среда обитания</a></li>
+                    <li><a href="#slide3" class="nav-link">3. Ключевые адаптации</a></li>
+                    <li><a href="#slide4" class="nav-link">4. Технологический симбиоз</a></li>
+                    <li><a href="#slide5" class="nav-link">Вывод</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    
+    <main class="container">
+        <div class="slides-container">
+            <!-- Слайд 1: Исходная форма -->
+            <section id="slide1" class="slide active">
+                <div class="evolution-stage">
+                    <div class="stage-number">1</div>
+                    <div>
+                        <h2>Исходная форма</h2>
+
+<p>Наиболее вероятный предок далека — <span class="highlight">сухопутный головоногий моллюск</span>, аналог кальмара или наутилуса.</p>
+                    </div>
+                </div>
+                
+                <p>Выбор такого предка обусловлен наличием:</p>
+                <ul>
+                    <li><span class="highlight">Развитого мозга</span> — основы для будущего интеллекта</li>
+                    <li><span class="highlight">Гибких щупалец</span> — идеальной "заготовки" для будущего манипулятора</li>
+                    <li><span class="highlight">Глаз на стебельках</span> — прототипа зрительного сенсора далека</li>
+                </ul>
+                <p>Эта биологическая конструкция стала оптимальной основой для дальнейшей эволюции в экстремальных условиях.</p>
+                
+                <div class="navigation-buttons">
+                    <button class="nav-btn prev-btn" disabled>Назад</button>
+                    <button class="nav-btn next-btn">Вперед</button>
+                </div>
+            </section>
+            
+            <!-- Слайд 2: Среда обитания и давление отбора -->
+            <section id="slide2" class="slide">
+                <div class="evolution-stage">
+                    <div class="stage-number">2</div>
+                    <div>
+                        <h2>Среда обитания и давление отбора</h2>
+                        <p>Вид эволюционировал на планете с <span class="highlight">экстремальными условиями</span>.</p>
+                    </div>
+                </div>
+                
+                <div class="environment-list">
+                    <div class="environment-item">
+                        <h3>Высокая гравитация</h3>
+                        <p>Требовала развития мощных структур поддержки и минимизации энергозатрат на движение.</p>
+                    </div>
+                    <div class="environment-item">
+                        <h3>Едкая атмосфера</h3>
+                        <p>Необходимость защиты от химически агрессивной среды способствовала развитию биопанциря.</p>
+                    </div>
+                    <div class="environment-item">
+                        <h3>Постоянный радиационный фон</h3>
+                        <p>Создал потребность в эффективной радиационной защите, что привело к минерализации покровов.</p>
+                    </div>
+                </div>
+                
+                <p>Эти условия создали колоссальное эволюционное давление, направленное на:</p>
+                <ul>
+                    <li><span class="highlight">Максимальную защиту уязвимого тела</span></li>
+                    <li><span class="highlight">Экономию энергии и ресурсов</span></li>
+                    <li><span class="highlight">Развитие интеллекта для тактического выживания</span></li>
+                </ul>
+                
+                <div class="navigation-buttons">
+                    <button class="nav-btn prev-btn">Назад</button>
+                    <button class="nav-btn next-btn">Вперед</button>
+                </div>
+            </section>
+            
+            <!-- Слайд 3: Ключевые адаптации -->
+            <section id="slide3" class="slide">
+                <div class="evolution-stage">
+                    <div class="stage-number">3</div>
+                    <div>
+                        <h2>Ключевые адаптации</h2>
+                        <p>Эволюционные изменения, сформировавшие далека как вид.</p>
+                    </div>
+                </div>
+                
+                <div class="adaptation-grid">
+                    <div class="adaptation-card">
+                        <h3>Биопанцирь</h3>
+                        <p>Первичная мутация — гипертрофированная способность к секреции минерализованных пластин. Они срослись в монолитный цилиндр, ставший защитой от радиации, хищников и коррозии.</p>
+                    </div>
+                    
+                    <div class="adaptation-card">
+                        <h3>Универсальная конечность</h3><p>Множество щупалец редуцировалось до одного мощного манипулятора — энергетически выгодное решение в условиях дефицита ресурсов.</p>
+                    </div>
+                    
+                    <div class="adaptation-card">
+                        <h3>Сенсорный комплекс</h3>
+                        <p>Глаз на подвижном стебельке позволил обозревать местность, не покидая брони. Окружающие его чувствительные выросты позже могли быть заменены технологическими датчиками.</p>
+                    </div>
+                    
+                    <div class="adaptation-card">
+                        <h3>Психология</h3>
+                        <p>В мире, где любая неизвестная жизнь смертельно опасна, эволюционно закрепились гипертрофированная агрессия, паранойя и ксенофобия. Это не патология, а адаптация к среде обитания.</p>
+                    </div>
+                </div>
+                
+                <div class="navigation-buttons">
+                    <button class="nav-btn prev-btn">Назад</button>
+                    <button class="nav-btn next-btn">Вперед</button>
+                </div>
+            </section>
+            
+            <!-- Слайд 4: Технологический симбиоз -->
+            <section id="slide4" class="slide">
+                <div class="evolution-stage">
+                    <div class="stage-number">4</div>
+                    <div>
+                        <h2>Технологический симбиоз — кульминация пути</h2>
+                        <p>Вид, заточенный в броню, сделал ставку на технологии как на продолжение биологии.</p>
+                    </div>
+                </div>
+                
+                <p>Далеки не просто используют машины — они вступают с ними в симбиоз:</p>
+                <ul>
+                    <li>Броня эволюционировала в универсальный скафандр, танк и космический корабль</li>
+                    <li>Биологическое ядро внутри стало "мозгом" этой системы</li>
+                    <li>Технологии стали продолжением биологических функций</li>
+                </ul>
+                
+                <p>Этот симбиоз позволил далекам преодолеть ограничения своей биологии и выйти на новый уровень эволюционного развития, где технологическое совершенствование стало частью естественного отбора.</p>
+                
+                <div class="navigation-buttons">
+                    <button class="nav-btn prev-btn">Назад</button>
+                    <button class="nav-btn next-btn">Вперед</button>
+                </div>
+            </section>
+            
+            <!-- Слайд 5: Вывод -->
+            <section id="slide5" class="slide">
+                <div class="conclusion">
+                    <h2>Вывод</h2>
+                    <p>Таким образом, далек — это продукт среды, где выжил не сильнейший, а <span class="highlight">самый защищённый, осторожный вид</span>.</p>
+                    
+                    <p>Его эволюционная логика: всё чужеродное — это угроза, а индивидуальность — приемлемая жертва для выживания расы.</p>
+                    
+                    <p>Его конечная форма — это не животное и не робот, а <span class="highlight">уникальный биотехнологический организм</span>, где естественный отбор уступил место отбору технологическому и идеологическому.</p>
+                </div>
+                
+                <div class="navigation-buttons">
+                    <button class="nav-btn prev-btn">Назад</button>
+                    <button class="nav-btn next-btn" disabled>Вперед</button>
+                </div>
+            </section>
+        </div>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <p>Презентация создана на основе анализа эволюционного пути далеков</p>
+            <p>Используйте навигацию для просмотра всех разделов</p>
+        </div>
+    </footer>
+<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const slides = document.querySelectorAll('.slide');
+            const navLinks = document.querySelectorAll('.nav-link');
+            const prevBtns = document.querySelectorAll('.prev-btn');
+            const nextBtns = document.querySelectorAll('.next-btn');
+            let currentSlide = 0;
+            
+            // Функция показа определенного слайда
+            function showSlide(index) {
+                // Скрываем все слайды
+                slides.forEach(slide => {
+                    slide.classList.remove('active');
+                });
+                
+                // Убираем активный класс у всех навигационных ссылок
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                });
+                
+                // Показываем выбранный слайд
+                slides[index].classList.add('active');
+                
+                // Активируем соответствующую ссылку в навигации
+                navLinks[index].classList.add('active');
+                
+                // Обновляем индекс текущего слайда
+                currentSlide = index;
+                
+                // Прокручиваем к слайду
+                slides[index].scrollIntoView({ behavior: 'smooth', block: 'start' });
+                
+                // Обновляем состояние кнопок навигации
+                updateNavButtons();
+            }
+            
+            // Функция обновления состояния кнопок навигации
+            function updateNavButtons() {
+                // Обновляем кнопки "Назад"
+                prevBtns.forEach(btn => {
+                    if (currentSlide === 0) {
+                        btn.disabled = true;
+                    } else {
+                        btn.disabled = false;
+                    }
+                });
+                
+                // Обновляем кнопки "Вперед"
+                nextBtns.forEach(btn => {
+                    if (currentSlide === slides.length - 1) {
+                        btn.disabled = true;
+                    } else {
+                        btn.disabled = false;
+                    }
+                });
+            }
+            
+            // Обработчики для навигационных ссылок
+            navLinks.forEach((link, index) => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    showSlide(index);
+                });
+            });
+            
+            // Обработчики для кнопок "Назад"
+            prevBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    if (currentSlide > 0) {
+                        showSlide(currentSlide - 1);
+                    }
+                });
+            });
+            
+            // Обработчики для кнопок "Вперед"
+            nextBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    if (currentSlide < slides.length - 1) {
+                        showSlide(currentSlide + 1);
+                    }
+                });
+            });
+            
+            // Инициализация
+            updateNavButtons();
+            
+            // Обработка клавиш клавиатуры
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'ArrowLeft' && currentSlide > 0) {
+                    showSlide(currentSlide - 1);
+                } else if (e.key === 'ArrowRight' && currentSlide < slides.length - 1) {
+                    showSlide(currentSlide + 1);
+                }
+            });
+            
+            // Плавное появление слайдов при загрузке
+            setTimeout(() => {
+                document.querySelectorAll('.slide').forEach(slide => {
+                    slide.style.transition = 'opacity 0.8s, transform 0.8s';
+                });
+            }, 100);
+        });
+    </script>
+</body>
+</html>
